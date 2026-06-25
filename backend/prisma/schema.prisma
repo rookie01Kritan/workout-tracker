@@ -1,0 +1,56 @@
+// backend/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User model
+// Represents one registered account.
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  // Relations - one user can have many exercises and many sessions
+  exercises Exercise[]
+  sessions  WorkoutSession[]
+}
+
+// Exercise model
+// Represents one exercise belonging to one user.
+model Exercise {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  exerciseName String
+  sets         Int
+  reps         Int
+  restTime     String?
+  muscleGroup  String?
+  duration     String?
+  category     String?
+  audioSrc     String?
+  audioName    String?
+  completed    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  // Relation back to the User who owns this exercise
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// WorkoutSession model
+// Represents one completed (or attempted) workout day.
+model WorkoutSession {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  date      DateTime
+  completed Boolean  @default(false)
+
+  // Relation back to the User who owns this session
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
