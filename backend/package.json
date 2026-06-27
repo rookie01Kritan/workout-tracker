@@ -6,7 +6,7 @@
   "scripts": {
   "start": "node server.js",
   "dev": "nodemon server.js",
-  "build": "pip install --break-system-packages -U yt-dlp && which yt-dlp; find / -iname yt-dlp -type f 2>/dev/null; npx prisma generate"
+  "build": "curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o ./yt-dlp-bin && chmod +x ./yt-dlp-bin && npx prisma generate"
 },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",

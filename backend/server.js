@@ -125,7 +125,8 @@ app.post("/api/download-youtube", (req, res) => {
   //   --audio-quality → 0 = best quality
   //   -o              → output file path
   //   --no-playlist   → don't download full playlist
-  const command = `yt-dlp -x --audio-format mp3 --audio-quality 0 --no-playlist -o "${outputPath}" "${url}"`;
+  const ytdlpPath = path.join(__dirname, "yt-dlp-bin");
+const command = `"${ytdlpPath}" -x --audio-format mp3 --audio-quality 0 --no-playlist -o "${outputPath}" "${url}"`;
 
   console.log("Downloading YouTube audio:", url);
 
