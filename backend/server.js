@@ -125,12 +125,15 @@ app.post("/api/download-youtube", (req, res) => {
   //   --audio-quality → 0 = best quality
   //   -o              → output file path
   //   --no-playlist   → don't download full playlist
-  const command = `python3 -m yt_dlp -x --audio-format mp3 --audio-quality 0 --no-playlist -o "${outputPath}" "${url}"`;
+  const command = `yt-dlp -x --audio-format mp3 --audio-quality 0 --no-playlist -o "${outputPath}" "${url}"`;
 
   console.log("Downloading YouTube audio:", url);
 
   // Set timeout to 5 minutes for large videos
-  exec(command, { timeout: 300000 }, (error, stdout, stderr) => {
+ exec(command, {
+  timeout: 300000,
+  env: { ...process.env, PATH: `${process.env.PATH}:/opt/render/.local/bin` },
+}, (error, stdout, stderr) => {
     if (error) {
       console.error("yt-dlp error:", error.message);
       return res.status(500).json({
