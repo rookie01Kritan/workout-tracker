@@ -31,6 +31,20 @@ export default function ExerciseModal({ exercise, onSave, onClose, isDark }) {
 
   const theme = isDark ? darkTheme : lightTheme;
 
+  // ── Extract an 11-character YouTube video ID from a URL ────────
+function extractYouTubeId(url) {
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=)([a-zA-Z0-9_-]{11})/,
+    /(?:youtu\.be\/)([a-zA-Z0-9_-]{11})/,
+    /(?:youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
   // ── Upload file from device ───────────────────────────────
   async function handleFileChange(e) {
     const file = e.target.files[0];
@@ -64,36 +78,21 @@ export default function ExerciseModal({ exercise, onSave, onClose, isDark }) {
     }
   }
 
-  // ── Download YouTube audio ────────────────────────────────
-  async function handleYoutubeDownload() {
+ // ── Use YouTube video for playback (no download needed) ──
+  function handleYoutubeDownload() {
     if (!youtubeUrl.trim()) return setError("Please paste a YouTube URL first.");
 
-    setIsLoading(true);
-    setStatus("Downloading YouTube audio... this may take a minute.");
-    setError("");
-
-    try {
-      const response = await fetch(`${BACKEND}/api/download-youtube`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ url: youtubeUrl.trim() }),
-      });
-
-      const data = await response.json();
-      if (!data.success) throw new Error(data.error || "Download failed");
-
-      setAudioSrc(data.fileUrl);
-      setAudioName(data.fileName);
-      setStatus("YouTube audio ready!");
-
-    } catch (err) {
-      setError("Download failed. Check the URL and try again.");
-      setStatus("");
-    } finally {
-      setIsLoading(false);
+    const videoId = extractYouTubeId(youtubeUrl.trim());
+    if (!videoId) {
+      setError("Couldn't find a valid YouTube video ID in that URL.");
+      return;
     }
-  }
 
+    setAudioSrc(`youtube:${videoId}`);
+    setAudioName("YouTube audio");
+    setStatus("YouTube audio ready!");
+    setError("");
+  }
   // ── Validate and save ─────────────────────────────────────
   function handleSave() {
     if (!name.trim())      return setError("Exercise name is required.");
