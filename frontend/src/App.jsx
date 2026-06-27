@@ -173,17 +173,16 @@ function AppInner() {
     const exercise = exercises.find((ex) => ex.id === id);
 
     // Delete the audio file from the backend's downloads folder, if one exists
-    if (exercise?.audioSrc?.includes("localhost:5000/audio/")) {
-      try {
-        const fileName = exercise.audioSrc.split("/audio/")[1];
-        await fetch(`http://localhost:5000/api/audio/${fileName}`, {
-          method: "DELETE",
-        });
-      } catch (err) {
-        console.error("Failed to delete audio:", err);
-      }
-    }
-
+    if (exercise?.audioSrc?.includes("workoutwithfun.onrender.com/audio/")) {
+  try {
+    const fileName = exercise.audioSrc.split("/audio/")[1];
+    await fetch(`https://workoutwithfun.onrender.com/api/audio/${fileName}`, {
+      method: "DELETE",
+    });
+  } catch (err) {
+    console.error("Failed to delete audio:", err);
+  }
+}
     // Delete the actual exercise row from Postgres
     await deleteExercise(id);
 
