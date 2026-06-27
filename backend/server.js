@@ -14,6 +14,7 @@ const PORT = process.env.PORT || 5000;
 
 const authRoutes = require("./src/routes/authRoutes");
 // ── Middleware ────────────────────────────────────────────────
+app.set("trust proxy", 1); // so req.protocol respects Render's X-Forwarded-Proto
 app.use(cors());
 app.use(express.json());
 
@@ -80,7 +81,7 @@ app.post("/api/upload", upload.single("audio"), (req, res) => {
       });
     }
 
-    const fileUrl = `http://localhost:${PORT}/audio/${req.file.filename}`;
+    const fileUrl = `${req.protocol}://${req.get("host")}/audio/${req.file.filename}`;
 
     console.log("File uploaded:", req.file.filename);
 
@@ -124,7 +125,7 @@ app.post("/api/download-youtube", (req, res) => {
   //   --audio-quality → 0 = best quality
   //   -o              → output file path
   //   --no-playlist   → don't download full playlist
-  const command = `yt-dlp -x --audio-format mp3 --audio-quality 0 --no-playlist -o "${outputPath}" "${url}"`;
+  const command = `python3 -m yt_dlp -x --audio-format mp3 --audio-quality 0 --no-playlist -o "${outputPath}" "${url}"`;
 
   console.log("Downloading YouTube audio:", url);
 
@@ -146,7 +147,7 @@ app.post("/api/download-youtube", (req, res) => {
       });
     }
 
-    const fileUrl = `http://localhost:${PORT}/audio/${fileName}`;
+    const fileUrl = `${req.protocol}://${req.get("host")}/audio/${fileName}`;
     console.log("YouTube audio downloaded:", fileName);
 
     res.json({
