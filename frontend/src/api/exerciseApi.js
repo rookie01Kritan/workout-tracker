@@ -4,7 +4,7 @@
 // localStorage as an Authorization header. Components never
 // build this header themselves - they just call these functions.
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://workoutwithfun.onrender.com";
 
 // ── Helper: build headers with the token attached ─────────────
 function getAuthHeaders() {

@@ -4,7 +4,7 @@
 // how auth requests are shaped. Components never call fetch()
 // directly - they call these functions instead.
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://workoutwithfun.onrender.com";
 
 // ── Register ──────────────────────────────────────────────────
 // Returns { token, user } on success.

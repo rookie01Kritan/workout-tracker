@@ -130,14 +130,23 @@ function AppInner() {
     }
   }
 
-  function handleComplete(id) {
+  async function handleComplete(id) {
+  try {
     if (id === currentId) stopAudio();
+
+    const exercise = exercises.find((ex) => ex.id === id);
+    const newCompletedValue = !exercise.completed;
+
+    const updated = await updateExercise(id, { completed: newCompletedValue });
+
     setExercises((prev) =>
-      prev.map((ex) =>
-        ex.id === id ? { ...ex, completed: !ex.completed } : ex
-      )
+      prev.map((ex) => (ex.id === id ? updated : ex))
     );
+
+  } catch (err) {
+    console.error("Failed to update exercise completion:", err);
   }
+}
 
   function handleReset() {
     stopAudio();
@@ -158,10 +167,12 @@ function AppInner() {
   }
 
   async function handleDelete(id) {
+  try {
     if (id === currentId) stopAudio();
 
     const exercise = exercises.find((ex) => ex.id === id);
 
+    // Delete the audio file from the backend's downloads folder, if one exists
     if (exercise?.audioSrc?.includes("localhost:5000/audio/")) {
       try {
         const fileName = exercise.audioSrc.split("/audio/")[1];
@@ -173,8 +184,16 @@ function AppInner() {
       }
     }
 
+    // Delete the actual exercise row from Postgres
+    await deleteExercise(id);
+
+    // Only remove it from local state AFTER the backend confirms deletion
     setExercises((prev) => prev.filter((ex) => ex.id !== id));
+
+  } catch (err) {
+    console.error("Failed to delete exercise:", err);
   }
+}
 
   async function handleSave(formData) {
   try {
