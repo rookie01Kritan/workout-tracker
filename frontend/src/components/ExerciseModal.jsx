@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const BACKEND = "http://localhost:5000";
+const BACKEND = "https://workoutwithfun.onrender.com";
 
 // ── Category options ──────────────────────────────────────────
 const CATEGORIES = [
